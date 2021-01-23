@@ -1,0 +1,35 @@
+﻿@model Course_Manager.Models.ClassDetailsViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+<br />
+<br />
+<br />
+<h4>Course: @Model.CourseName</h4>
+<h4>Instructor: @Model.InstructorName</h4>
+<h4>Semester: @Model.Semester</h4>
+<h4>Block: @Model.Block</h4>
+<br />
+<h2>Students:</h2>
+<table class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Student Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Course_Manager.Models.Student student in Model.StudentsInClass.OrderBy(s => s.LastName + s.FirstName))
+        {
+            <tr>
+                <td>@student.LastName</td>
+                <td>@student.FirstName</td>
+                <td>@student.StudentNumber</td>
+            </tr>
+        }
+    </tbody>
+</table>

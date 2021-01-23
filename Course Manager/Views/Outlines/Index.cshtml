@@ -1,0 +1,116 @@
+﻿@model Course_Manager.Models.OutlinesViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Outlines</h2>
+
+<h3>This is where you will state what classes students in each grade will have to take, and how many courses they can choose.</h3>
+<br />
+@using (Html.BeginForm("View", "Outlines"))
+{
+    <div class="form-group">
+        @Html.LabelFor(o => o.outline.Grade)
+        @Html.DropDownListFor(o => o.outline.Grade, new SelectList(new List<int> { 8, 9, 10, 11, 12 }), new { @class = "form-control" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">View Outline</button>
+}
+<br />
+<br />
+@if (Model.outline.Grade != 0)
+{
+    <h4>Manditory Courses</h4>
+    <table class="table table-bordered table-hover" id="OutlineCourses">
+        <thead>
+            <tr>
+                <th>Course Name</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+
+        @for (int i = 0; i < 8; i++)
+        {
+            <tr>
+                @if (Model.outline.Courses.Count > i)
+                {
+                    <td>
+                        @Model.outline.Courses[i].Name
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="Remove(@Model.outline.Courses[i].Id)">Remove</button>
+                    </td>
+                }
+                else
+                {
+                    <td>Elective</td>
+                }
+            </tr>
+        }
+        <tbody></tbody>
+    </table>
+
+
+    <select class="form-control" id="AddList">
+        @foreach (Course_Manager.Models.Course course in Model.courses)
+        {
+            <option value="@course.Id">@course.Name</option>
+        }
+    </select>
+    <button type="button" class="btn btn-danger" id="AddButton">Add Course</button>
+
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+
+                function Remove(id) {
+                console.log("WEWE");
+                $.ajax(
+                    {
+                        type: "Delete",
+                        url: "/outlines/RemoveCourseFromOutline",
+                        data: {
+                            id: id,
+                            grade: @Model.outline.Grade
+                        }
+                    }).done(function () {
+                        window.location.reload();
+                    }).fail(function () {
+                        toastr.error("An error occured")
+                    });
+            }
+
+        $(document).ready(function () {
+
+
+
+            $("#AddButton").on("click", function () {
+                var courseId = $("#AddList :selected").val();
+                $.ajax(
+                    {
+                        type: "POST",
+                        url: "/outlines/AddCourseToOutline",
+                        data: {
+                            id: courseId,
+                            grade: @Model.outline.Grade
+                        }
+                    }).done(function () {
+                        window.location.reload();
+                    }).fail(function () {
+                        toastr.error("An error occured")
+                    });
+
+            });
+
+
+        });
+</script>
+
+
+}
+
+

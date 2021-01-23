@@ -1,0 +1,60 @@
+﻿@model Course_Manager.Models.CoursesViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Courses</h2>
+
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("New", "Courses")'">New Course</button>
+@if (Model.Courses.Count == 0)
+{
+    <h1>There are currently no courses in the database.</h1>
+}
+else
+{
+    <table id="CourseList" class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Course Name</th>
+                <th>Grade Level</th>
+                <th>Category</th>
+                <th>Actions</th>
+                <th>Can Be An Elective</th>
+                <th>Classes Teaching This</th>
+            </tr>
+        </thead>
+        @foreach (Course_Manager.Models.Course course in Model.Courses)
+        {
+            <tr>
+                <td>@course.Name</td>
+                <td>@course.GradeLevel</td>
+                <td>@course.Category.Name</td>
+                <td>
+                    <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("New", "Courses", course)'">Edit</button>
+                    <button type="button" class="btn btn-danger" onclick="RemoveCourse(@course.Id)">Delete</button>
+                </td>
+                <td>@course.CanBeAnElective</td>
+                <td>@Model.Classes.Where(c => c.course == course).Count()</td>
+            </tr>
+        }
+    </table>
+}
+
+<script>
+    function RemoveCourse(id) {
+        bootbox.confirm("Are you sure you want to delete this course?", function (result) {
+            if (result) {
+                $.ajax({
+                    url: "/api/courses/" + id,
+                    method: "delete",
+                }).done(function (Response) {
+                    toastr.success("Success. The course has been removed.");
+                    location.reload();
+                }).fail(function (Response) {
+                    toastr.fail("Something went wrong");
+                });
+            }
+        });
+    }
+</script>

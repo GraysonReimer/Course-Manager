@@ -1,0 +1,61 @@
+﻿@model Course_Manager.Models.StaffDetailsViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h1>@Model.staffMember.FullName</h1>
+<br />
+@if (Model.classes.Count != 0)
+{
+    if (Model.classes.Where(c => c.Semester == 1).Count() != 0)
+    {
+        <h2>Semester One Classes</h2>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Block</th>
+                    <th>Course</th>
+                    <th>Room Number</th>
+                </tr>
+            </thead>
+
+            @foreach (Course_Manager.Models.Class Class in Model.classes.Where(c => c.Semester == 1))
+            {
+                <tr onclick="location.href='@Url.Action("Details", "Classes")'+'/'+@Class.Id">
+                    <td>@Class.Block</td>
+                    <td>@Class.course.Name</td>
+                    <td>@Class.RoomNumber</td>
+                </tr>
+            }
+            <tbody></tbody>
+        </table>
+    }
+    if (Model.classes.Where(c => c.Semester == 2).Count() != 0)
+    {
+        <h2>Semester Two Classes</h2>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Block</th>
+                    <th>Course</th>
+                    <th>Room Number</th>
+                </tr>
+            </thead>
+
+            @foreach (Course_Manager.Models.Class Class in Model.classes.Where(c => c.Semester == 2))
+            {
+                <tr onclick="location.href='@Url.Action("Details", "Classes")'+'/'+@Class.Id">
+                    <td>@Class.Block</td>
+                    <td>@Class.course.Name</td>
+                    <td>@Class.RoomNumber</td>
+                </tr>
+            }
+            <tbody></tbody>
+        </table>
+    }
+}
+else
+{
+    <h3>This staff member does not teach any classes.</h3>
+}

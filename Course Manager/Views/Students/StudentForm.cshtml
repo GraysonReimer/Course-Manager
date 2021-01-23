@@ -1,0 +1,30 @@
+﻿@model Course_Manager.Models.Student
+
+@{
+    ViewBag.Title = "StudentForm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>New Student</h2>
+
+@using (Html.BeginForm("Save", "Students"))
+{
+    @Html.ValidationSummary(true, "Please fix the following errors.")
+    <div class="form-group">
+        @Html.LabelFor(s => s.FirstName)
+        @Html.TextBoxFor(s => s.FirstName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(s => s.FirstName)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(s => s.LastName)
+        @Html.TextBoxFor(s => s.LastName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(s => s.LastName)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(s => s.Grade)
+        @Html.TextBoxFor(s => s.Grade, new { @class = "form-control" })
+        @Html.ValidationMessageFor(s => s.Grade)
+    </div>
+    @Html.HiddenFor(m => m.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+}

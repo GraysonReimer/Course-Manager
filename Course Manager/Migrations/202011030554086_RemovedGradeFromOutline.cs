@@ -1,0 +1,18 @@
+namespace Course_Manager.Migrations
+{
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class RemovedGradeFromOutline : DbMigration
+    {
+        public override void Up()
+        {
+            DropColumn("dbo.Outlines", "Grade");
+        }
+        
+        public override void Down()
+        {
+            AddColumn("dbo.Outlines", "Grade", c => c.Int(nullable: false));
+        }
+    }
+}

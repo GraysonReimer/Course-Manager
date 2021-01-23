@@ -1,0 +1,94 @@
+﻿@model Course_Manager.Models.ClassesViewModel
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Classes</h2>
+<br />
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("New", "Classes")'">New Class</button>
+<br />
+@foreach (Course_Manager.Models.StaffMember instructor in Model.Staff)
+{
+    <h1>@instructor.FirstName @instructor.LastName</h1>
+    <div class="tab-pane">
+        <br />
+        @if (Model.Classes.Where(c => c.Instructor == instructor && c.Semester == 1).Count() != 0)
+        {
+            <h4>Semester One</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Block</th>
+                        <th>Course</th>
+                        <th>Room Number</th>
+                        <th>Occupancy</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                @foreach (Course_Manager.Models.Class Class in Model.Classes.Where(c => c.Instructor == instructor && c.Semester == 1).OrderBy(c => c.Block))
+                {
+                    <tr onclick="location.href='@Url.Action("Details", "Classes")'+'/'+@Class.Id">
+                        <td>@Class.Block</td>
+                        <td>@Class.course.Name</td>
+                        <td>@Class.RoomNumber</td>
+                        <td>@Class.StudentsEnrolled/@Class.OccupancyLimit</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("New", "Classes", Class)'">Edit</button>
+                            <button type="button" class="btn btn-danger" onclick="RemoveClass(@Class.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+                <tbody></tbody>
+            </table>
+        }
+        @if (Model.Classes.Where(c => c.Instructor == instructor && c.Semester == 2).Count() != 0)
+        {
+            <h4>Semester Two</h4>
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Block</th>
+                        <th>Course</th>
+                        <th>Room Number</th>
+                        <th>Occupancy</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                @foreach (Course_Manager.Models.Class Class in Model.Classes.Where(c => c.Instructor == instructor && c.Semester == 2).OrderBy(c => c.Block))
+                {
+                    <tr onclick="location.href='@Url.Action("Details", "Classes")'+'/'+@Class.Id">
+                        <td>@Class.Block</td>
+                        <td>@Class.course.Name</td>
+                        <td>@Class.RoomNumber</td>
+                        <td>@Class.StudentsEnrolled/@Class.OccupancyLimit</td>
+                        <td>
+                            <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("New", "Classes", Class)'">Edit</button>
+                            <button type="button" class="btn btn-danger" onclick="RemoveClass(@Class.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+                <tbody></tbody>
+            </table>
+        }
+    </div>
+}
+
+<script>
+    function RemoveClass(id) {
+        bootbox.confirm("Are you sure you want to delete this class?", function (result) {
+            if (result) {
+                $.ajax({
+                    url: "/api/classes/"+id,
+                    method: "delete"
+                }).done(function (Response) {
+                    toastr.success("Success. The class has been removed.");
+                    //location.reload();
+                }).fail(function (Response) {
+                    toastr.error("something went wrong.");
+                });
+            }
+        });
+    }
+</script>

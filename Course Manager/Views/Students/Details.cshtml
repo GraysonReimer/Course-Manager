@@ -1,0 +1,66 @@
+﻿@model Course_Manager.Models.Student
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.FirstName @Model.LastName</h2>
+
+<h3>Grade: @Model.Grade</h3>
+<h3>Student Number: @Model.StudentNumber</h3>
+<br />
+@if (Model.DonePickingClasses)
+{
+    if (Model.Classes.Count > 0)
+    {
+        <h1>Courses</h1>
+        <table id="ClassList" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Block</th>
+                    <th>Semester</th>
+                    <th>Course</th>
+                    <th>Category</th>
+                    <th>Instructor</th>
+                    <th>Room Number</th>
+                </tr>
+            </thead>
+            @foreach (Course_Manager.Models.Class Class in Model.Classes.Where(c => c.Semester == 1).OrderBy(c => c.Block).Concat(Model.Classes.Where(c => c.Semester == 2).OrderBy(c => c.Block)))
+            {
+                <tr>
+                    <td>@Class.Block</td>
+                    <td>@Class.Semester</td>
+                    <td>@Class.course.Name</td>
+                    <td>@Class.course.Category.Name</td>
+                    <td>@Class.Instructor.FullName</td>
+                    <td>@Class.RoomNumber</td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <h1>Course Requests</h1>
+        <table id="CourseRequestList" class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>First Choice</th>
+                    <th>Second Choice</th>
+                </tr>
+            </thead>
+            @foreach (Course_Manager.Models.CourseRequest request in Model.CourseRequests)
+            {
+                <tr>
+                    <td>@request.FirstChoice.Name</td>
+                    <td>@request.SecondChoice.Name</td>
+                </tr>
+            }
+        </table>
+    }
+}
+else
+{
+    <h4>This student has not chosen any courses yet.</h4>
+}
+
+

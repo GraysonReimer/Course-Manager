@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "StudentHome";
+}
+
+
+<!--To test, login as Joe Mark with password of 8357904-->
+
+
+<h1 class="page-header">Welcome @User.Identity.Name!</h1>
+<br />
+<p class="text-info">To view, or select your courses, please press the button below.</p>
+<button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("Select", "Courses")'">View my courses</button>
+

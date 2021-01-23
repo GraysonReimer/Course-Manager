@@ -1,0 +1,148 @@
+﻿@model Course_Manager.Models.AdminHomeViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+
+    var issues = 0;
+}
+
+<h1 class="text-center">Welcome Administrator</h1>
+<div class="active">
+    <section class="tab-content" style="background-color: mintcream; color: dimgrey; align-self: center">
+        <h1>Course Status:</h1>
+        @if (Model.StudentsCanPickCourses)
+        {
+            <h3>Students are currently allowed to pick out their courses.</h3>
+            <button type="button" class="btn btn-danger" onclick="location.href='@Url.Action("StopCourseSelection", "Home")'">Stop Course Selection</button>
+            <br />
+            <h2 class="active">@Model.Students.Where(s => s.DonePickingClasses).Count() out of @Model.Students.Count have finished selecting their courses.</h2>
+        }
+        else
+        {
+            <h3>Students are not currently allowed to pick out their courses.</h3>
+            <button type="button" class="btn btn-primary" onclick="location.href='@Url.Action("BeginCourseSelection", "Home")'">Begin Course Selection</button>
+            <br />
+            <h2 class="active">@Model.Students.Where(s => s.DonePickingClasses).Count() out of @Model.Students.Count students have their courses selected.</h2>
+        }
+        <button type="button" class="btn btn-danger" id="RemoveCoursesButton">Clear All Student Courses</button>
+    </section>
+    <br />
+    <section class="tab-content" style="background-color: mintcream; color: dimgrey; align-self: center">
+        <h1>Management:</h1>
+        <button type="button" style="margin-bottom: 15px" class="btn btn-primary" onclick="IncrementGrades()">Increment Grades ▲</button>
+        <br />
+        <button type="button" class="btn btn-success" onclick="AssignClasses()">Assign Classes to students</button>
+    </section>
+    <section class="tab-content" style="background-color: mintcream; color: dimgrey; align-self: center">
+        @{ var studentsNotDone = @Model.Students.Where(s => !s.DonePickingClasses).Count(); }
+        <h1>Issues:</h1>
+        @if(studentsNotDone > 0)
+        {
+            <h4 style="color: red">@studentsNotDone students have not picked their courses yet.</h4>
+            issues++;
+        }
+        @foreach (Course_Manager.Models.Outline outline in Model.Outlines)
+        {
+            foreach (Course_Manager.Models.Course mandatoryCourse in outline.Courses)
+            {
+                var classes = Model.Classes.Where(c => c.course == mandatoryCourse);
+                var studentsThatNeedInClass = Model.Students.Where(s => s.Grade == outline.Grade).Count();
+                var availableSpots = 0;
+                foreach (Course_Manager.Models.Class Class in classes)
+                {
+                    availableSpots += Class.OccupancyLimit - Class.StudentsEnrolled;
+                }
+                if (studentsThatNeedInClass > availableSpots)
+                {
+                    <h4 style="color: red">There are not enough spaces in the mandatory course @mandatoryCourse.Name for all of the students in Grade @outline.Grade. Please add more classes for that course or increase the available spots in the classes.</h4>
+                    issues++;
+                }
+            }
+        }
+    </section>
+</div>
+
+
+
+@section scripts
+{
+    <script type="text/javascript">
+
+        function AssignClasses() {
+            if (@issues > 0) {
+                bootbox.alert("There are @issues issues that you have to fix before you can assign classes. See them in the issues section.");
+            }
+            else {
+                bootbox.confirm("Are you sure you want to assign all of the students' classes?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/Home/AssignClasses",
+                            dataType: 'json',
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message);
+                                }
+                                else {
+                                    toastr.error(response.message);
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        function IncrementGrades() {
+            bootbox.confirm("Are you sure you want to increment the grade level of all students in the database? All students at grade level 12 with be removed.", function (result) {
+                if (result) {
+                    $.ajax({
+                        url: "/Home/IncrementGrades",
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.success) {
+                                toastr.success("Success. All students had their courses cleared.");
+                            }
+                            else {
+                                toastr.error("Something went wrong.");
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#RemoveCoursesButton").on("click", function (e) {
+                bootbox.confirm("Completing this action will remove all of the courses for each student's time-table. Please enter the admin password to continue.", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/Home/ClearCourses",
+                            dataType: 'json',
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success("Success. All students had their courses cleared.");
+                                }
+                                else {
+                                    toastr.error("Something went wrong.");
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+
+        });
+    </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+}

@@ -1,0 +1,74 @@
+﻿@model Course_Manager.Models.StudentCoursesViewModel
+
+@{
+    ViewBag.Title = "StudentCourses";
+}
+
+<h1 class="page-header">My Courses</h1>
+
+
+@if (!Model.CanSelectCourses /*When testing use login Joe Mark with SN 8357904*/)
+{
+    if (Model.student.Classes.Count() != 0)
+    {
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Semester</th>
+                    <th>Block</th>
+                    <th>Course</th>
+                    <th>Category</th>
+                    <th>Instructor</th>
+                    <th>Room Number</th>
+                </tr>
+            </thead>
+
+            @foreach (Course_Manager.Models.Class StudentClass in Model.student.Classes)
+            {
+                <tr>
+                    <td>@StudentClass.Semester</td>
+                    <td>@StudentClass.Block</td>
+                    <td>@StudentClass.course.Name</td>
+                    <td>@StudentClass.course.Category</td>
+                    <td>@StudentClass.Instructor.FullName</td>
+                    <td>@StudentClass.RoomNumber</td>
+                </tr>
+            }
+            <tbody></tbody>
+        </table>
+    }
+    else
+    {
+
+        <h2>Your schedule appears to be empty. You can not select your courses at this time.</h2>
+    }
+}
+else
+{
+    if (Model.student.DonePickingClasses)
+    {
+        <h2>You have already selected your electives. Your requests are shown below</h2>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>First Choice</th>
+                    <th>Second Choice</th>
+                </tr>
+            </thead>
+            @foreach (Course_Manager.Models.CourseRequest request in Model.Requests)
+            {
+                <tr>
+                    <td>@request.FirstChoice.Name</td>
+                    <td>@request.SecondChoice.Name</td>
+                </tr>
+            }
+            <tbody></tbody>
+        </table>
+    }
+    else
+    {
+        <h2>It appears you have not selected your courses yet. You can choose them below.</h2>
+        <button type="button" class="btn btn-link" onclick="location.href='@Url.Action("Select", "Courses")'">Select my courses</button>
+        
+    }
+}
